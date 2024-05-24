@@ -1,0 +1,1 @@
+insert into "quiz-set" (name, created_at) values ('Quiz Set 1', now());
