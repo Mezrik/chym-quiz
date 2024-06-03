@@ -158,16 +158,19 @@ export type Database = {
           created_at: string
           id: number
           text: string
+          type: Database["public"]["Enums"]["chart_type"]
         }
         Insert: {
           created_at?: string
           id?: number
           text: string
+          type?: Database["public"]["Enums"]["chart_type"]
         }
         Update: {
           created_at?: string
           id?: number
           text?: string
+          type?: Database["public"]["Enums"]["chart_type"]
         }
         Relationships: []
       }
@@ -259,7 +262,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      chart_type: "histogram" | "pie-chart" | "bar-chart" | "line-chart"
     }
     CompositeTypes: {
       [_ in never]: never

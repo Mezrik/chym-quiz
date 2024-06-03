@@ -68,20 +68,24 @@ export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
       .eq("id", quizPassId);
   };
 
+  const insertResults = async (payload: Record<string, number>) => {
+    await supabase
+      .from("quiz_instance_pass_answer")
+      .insert(
+        Object.entries<number>(payload).map(([key, value]) => ({
+          quiz_question_id: parseInt(key, 10),
+          quiz_instance_pass_id: quizPassId,
+          quiz_question_answer_id: value,
+        }))
+      )
+      .select();
+  };
+
   channel
     .on("broadcast", { event: "submit" }, async ({ payload }) => {
       setEnd();
 
-      await supabase
-        .from("quiz_instance_pass_answer")
-        .insert(
-          Object.entries<number>(payload).map(([key, value]) => ({
-            quiz_question_id: parseInt(key, 10),
-            quiz_instance_pass_id: quizPassId,
-            quiz_question_answer_id: value,
-          }))
-        )
-        .select();
+      insertResults(payload);
 
       channel.unsubscribe();
       interval && clearInterval(interval);
@@ -116,10 +120,44 @@ export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
           setEnd();
 
           interval && clearInterval(interval);
-          channel.unsubscribe();
         }
       }, 1000);
     });
 
   return roomId;
+};
+
+export const getQuizPassResults = async ({
+  quizPassId,
+}: {
+  quizPassId: string;
+}) => {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("quiz_instance_pass")
+    .select(
+      `id, passer_name, start, end, quiz_instance_id, quiz_instance_pass_answer(id, quiz_question(type), quiz_question_answer(id, text, is_correct))`
+    )
+    .eq("id", quizPassId);
+
+  if (error) return { error: { message: error.message } } as ServerError;
+
+  if (data?.[0].quiz_instance_id === null)
+    return {
+      error: { message: "Quiz pass does not have assigned instance" },
+    } as ServerError;
+
+  const quizInstance = await supabase
+    .from("quiz_instance")
+    .select(`quiz_instance_question(quiz_question(id, type))`)
+    .eq("id", data?.[0].quiz_instance_id)
+    .single();
+
+  if (quizInstance.error)
+    return { error: { message: quizInstance.error.message } } as ServerError;
+
+  // TODO: evaluate results
+
+  return data;
 };

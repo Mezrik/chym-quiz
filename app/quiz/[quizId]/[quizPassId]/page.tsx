@@ -68,9 +68,17 @@ export default function Page({
         .on("broadcast", { event: "time-tick" }, ({ payload }) =>
           trackTime(payload.timeRemaining)
         )
-        .on("broadcast", { event: "time-end" }, (payload) =>
-          setTimeRemaining(0)
-        )
+        .on("broadcast", { event: "time-end" }, (payload) => {
+          setTimeRemaining(0);
+
+          channel.send({
+            type: "broadcast",
+            event: "submit",
+            payload: answers,
+          });
+
+          supabase.removeChannel(channel);
+        })
         .subscribe();
     };
 
