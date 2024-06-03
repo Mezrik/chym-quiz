@@ -63,3 +63,35 @@ export const insertNewQuizInstance = async ({
 
   return data;
 };
+
+export const getQuizReadData = async ({ quizId }: { quizId: string }) => {
+  const supabase = createClient();
+
+  const { error, data } = await supabase
+    .from("quiz_instance")
+    .select(
+      `id, seconds_per_question, self_test, show_results, quiz_instance_question(count)`
+    )
+    .eq("id", quizId)
+    .single();
+
+  if (error) return { error: { message: error.message } } as ServerError;
+
+  return data;
+};
+
+export const getQuizReadDataFull = async ({ quizId }: { quizId: string }) => {
+  const supabase = createClient();
+
+  const { error, data } = await supabase
+    .from("quiz_instance")
+    .select(
+      `id, seconds_per_question, self_test, show_results, quiz_instance_question(id, quiz_question(id, text, quiz_question_answer(id, text)))`
+    )
+    .eq("id", quizId)
+    .single();
+
+  if (error) return { error: { message: error.message } } as ServerError;
+
+  return data;
+};

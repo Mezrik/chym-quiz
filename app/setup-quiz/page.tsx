@@ -7,15 +7,13 @@ import { SetupForm } from "@/components/quiz/setup/setup-form";
 import { getQuizSets } from "@/actions/quiz-set";
 import { insertNewQuizInstance } from "@/actions/quiz-instance";
 
-export default function SetupQuiz() {
+export default function Page() {
   const router = useRouter();
 
   const { data: quizSets, isLoading: quizSetsLoading } = useQuery({
     queryKey: ["quizSets"],
     queryFn: () => getQuizSets(),
   });
-
-  console.log(quizSets);
 
   const mutation = useMutation({
     mutationFn: insertNewQuizInstance,

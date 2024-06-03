@@ -39,25 +39,31 @@ export type Database = {
       quiz_instance_pass: {
         Row: {
           created_at: string
-          id: number
+          end: string | null
+          id: string
           passer_name: string
           quiz_instance_id: string | null
+          start: string | null
         }
         Insert: {
           created_at?: string
-          id?: number
+          end?: string | null
+          id?: string
           passer_name: string
           quiz_instance_id?: string | null
+          start?: string | null
         }
         Update: {
           created_at?: string
-          id?: number
+          end?: string | null
+          id?: string
           passer_name?: string
           quiz_instance_id?: string | null
+          start?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "quiz_instance_pass_quiz_instance_id_fkey"
+            foreignKeyName: "quiz_instance_pass_duplicate_quiz_instance_id_fkey"
             columns: ["quiz_instance_id"]
             isOneToOne: false
             referencedRelation: "quiz_instance"
@@ -69,30 +75,37 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          quiz_instance_id: string | null
+          quiz_instance_pass_id: string | null
+          quiz_question_answer_id: number | null
           quiz_question_id: number
-          seconds_taken: number
         }
         Insert: {
           created_at?: string
           id?: number
-          quiz_instance_id?: string | null
+          quiz_instance_pass_id?: string | null
+          quiz_question_answer_id?: number | null
           quiz_question_id: number
-          seconds_taken: number
         }
         Update: {
           created_at?: string
           id?: number
-          quiz_instance_id?: string | null
+          quiz_instance_pass_id?: string | null
+          quiz_question_answer_id?: number | null
           quiz_question_id?: number
-          seconds_taken?: number
         }
         Relationships: [
           {
-            foreignKeyName: "quiz_instance_pass_answer_quiz_instance_id_fkey"
-            columns: ["quiz_instance_id"]
+            foreignKeyName: "quiz_instance_pass_answer_quiz_instance_pass_id_fkey"
+            columns: ["quiz_instance_pass_id"]
             isOneToOne: false
-            referencedRelation: "quiz_instance"
+            referencedRelation: "quiz_instance_pass"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_instance_pass_answer_quiz_question_answer_id_fkey"
+            columns: ["quiz_question_answer_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_question_answer"
             referencedColumns: ["id"]
           },
           {
