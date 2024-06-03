@@ -9,28 +9,188 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      "quiz-question": {
+      quiz_instance: {
         Row: {
-          answers: Json | null
+          author_email: string
           created_at: string
-          id: number
-          text: string | null
+          id: string
+          seconds_per_question: number | null
+          self_test: boolean
+          show_results: boolean | null
         }
         Insert: {
-          answers?: Json | null
+          author_email: string
           created_at?: string
-          id?: number
-          text?: string | null
+          id?: string
+          seconds_per_question?: number | null
+          self_test?: boolean
+          show_results?: boolean | null
         }
         Update: {
-          answers?: Json | null
+          author_email?: string
           created_at?: string
-          id?: number
-          text?: string | null
+          id?: string
+          seconds_per_question?: number | null
+          self_test?: boolean
+          show_results?: boolean | null
         }
         Relationships: []
       }
-      "quiz-set": {
+      quiz_instance_pass: {
+        Row: {
+          created_at: string
+          id: number
+          passer_name: string
+          quiz_instance_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          passer_name: string
+          quiz_instance_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          passer_name?: string
+          quiz_instance_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_instance_pass_quiz_instance_id_fkey"
+            columns: ["quiz_instance_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_instance"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_instance_pass_answer: {
+        Row: {
+          created_at: string
+          id: number
+          quiz_instance_id: string | null
+          quiz_question_id: number
+          seconds_taken: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          quiz_instance_id?: string | null
+          quiz_question_id: number
+          seconds_taken: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          quiz_instance_id?: string | null
+          quiz_question_id?: number
+          seconds_taken?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_instance_pass_answer_quiz_instance_id_fkey"
+            columns: ["quiz_instance_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_instance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_instance_pass_answer_quiz_question_id_fkey"
+            columns: ["quiz_question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_question"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_instance_question: {
+        Row: {
+          created_at: string
+          id: number
+          quiz_instance_id: string | null
+          quiz_question_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          quiz_instance_id?: string | null
+          quiz_question_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          quiz_instance_id?: string | null
+          quiz_question_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_instance_question_quiz_instance_id_fkey"
+            columns: ["quiz_instance_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_instance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_instance_question_quiz_question_id_fkey"
+            columns: ["quiz_question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_question"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_question: {
+        Row: {
+          created_at: string
+          id: number
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          text?: string
+        }
+        Relationships: []
+      }
+      quiz_question_answer: {
+        Row: {
+          created_at: string
+          id: number
+          is_correct: boolean
+          quiz_question_id: number | null
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          is_correct?: boolean
+          quiz_question_id?: number | null
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          is_correct?: boolean
+          quiz_question_id?: number | null
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_question_answer_quiz_question_id_fkey"
+            columns: ["quiz_question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_question"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_set: {
         Row: {
           created_at: string
           id: number
@@ -47,6 +207,36 @@ export type Database = {
           name?: string | null
         }
         Relationships: []
+      }
+      quiz_set_question: {
+        Row: {
+          quiz_question_id: number
+          quiz_set_id: number
+        }
+        Insert: {
+          quiz_question_id: number
+          quiz_set_id: number
+        }
+        Update: {
+          quiz_question_id?: number
+          quiz_set_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_set_question_quiz_question_id_fkey"
+            columns: ["quiz_question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_question"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_set_question_quiz_set_id_fkey"
+            columns: ["quiz_set_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_set"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
