@@ -13,11 +13,15 @@ export const Question: FC<{
   id: number;
   answers: QuestionAnswer[];
   onAnswer: (answerId: number) => void;
-}> = ({ text, id, answers, onAnswer }) => {
+  readOnly?: boolean;
+}> = ({ text, id, answers, onAnswer, readOnly }) => {
   return (
     <div className="box">
       <h2 className="text-lg font-semibold mb-4">{text}</h2>
-      <RadioGroup onValueChange={(id) => onAnswer(parseInt(id, 10))}>
+      <RadioGroup
+        onValueChange={(id) => onAnswer(parseInt(id, 10))}
+        disabled={readOnly}
+      >
         {answers.map((answer) => (
           <div
             className="flex items-center space-x-2"

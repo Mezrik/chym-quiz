@@ -19,6 +19,8 @@ export default function Page({
 }) {
   const { quizPassId, quizId } = params;
 
+  const readOnly = quizPassId === "read-only";
+
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
 
@@ -52,7 +54,7 @@ export default function Page({
   };
 
   useEffect(() => {
-    if (!quiz || "error" in quiz) return;
+    if (!quiz || "error" in quiz || quizPassId === "read-only") return;
     const supabase = createClient();
 
     let channel: RealtimeChannel;
@@ -88,10 +90,12 @@ export default function Page({
 
   return (
     <div>
-      <div className="flex gap-4 items-center">
-        <Progress value={(timeRemaining / (totalTime * 1000)) * 100} />
-        <div>{timeDigital(Math.round(timeRemaining / 1000))}</div>
-      </div>
+      {!readOnly && (
+        <div className="flex gap-4 items-center">
+          <Progress value={(timeRemaining / (totalTime * 1000)) * 100} />
+          <div>{timeDigital(Math.round(timeRemaining / 1000))}</div>
+        </div>
+      )}
       {quiz.quiz_instance_question.map(({ quiz_question: q }) =>
         q ? (
           <Question
@@ -100,12 +104,15 @@ export default function Page({
             text={q?.text}
             answers={q?.quiz_question_answer}
             onAnswer={handleSetAnswer(q.id)}
+            readOnly={readOnly}
           />
         ) : null
       )}
-      <Button type="button" onClick={handleSubmit}>
-        Odevzdat
-      </Button>
+      {!readOnly && (
+        <Button type="button" onClick={handleSubmit}>
+          Odevzdat
+        </Button>
+      )}
     </div>
   );
 }
