@@ -130,6 +130,23 @@ export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
   return roomId;
 };
 
+export const hasQuizPassEnded = async ({
+  quizPassId,
+}: {
+  quizPassId: string;
+}) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("quiz_instance_pass")
+    .select("end")
+    .eq("id", quizPassId)
+    .single();
+
+  if (error) return { error: { message: error.message } } as ServerError;
+
+  return !!data?.end;
+};
+
 export const getQuizPassResults = async ({
   quizPassId,
 }: {

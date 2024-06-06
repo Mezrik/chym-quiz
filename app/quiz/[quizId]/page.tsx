@@ -30,8 +30,6 @@ export default function Page({ params }: { params: { quizId: string } }) {
   const questionsCount = quiz.questionsCount ?? 0;
   const totalTime = questionsCount * (quiz.seconds_per_question ?? 0);
 
-  console.log(quiz);
-
   const handleStartQuiz = async () => {
     const data = await mutateAsync("test_name");
 

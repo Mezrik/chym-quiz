@@ -2,12 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { RealtimeChannel } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 
 import { getQuizReadDataFull } from "@/actions/quiz-instance";
 import { Question } from "@/components/quiz/question";
 import { createClient } from "@/utils/client";
 import { useEffect, useRef, useState } from "react";
-import { startQuiz } from "@/actions/quiz-pass";
+import { startQuiz, hasQuizPassEnded } from "@/actions/quiz-pass";
 import { Progress } from "@/components/ui/progress";
 import { timeDigital } from "@/utils/time";
 import { Button } from "@/components/ui/button";
@@ -17,11 +18,12 @@ export default function Page({
 }: {
   params: { quizPassId: string; quizId: string };
 }) {
+  const router = useRouter();
   const { quizPassId, quizId } = params;
 
   const readOnly = quizPassId === "read-only";
 
-  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(Number.MAX_SAFE_INTEGER);
   const [answers, setAnswers] = useState<Record<number, number>>({});
 
   const { data: quiz, isLoading: quizLoading } = useQuery({
@@ -29,11 +31,19 @@ export default function Page({
     queryFn: () => getQuizReadDataFull({ quizId }),
   });
 
+  const { data: ended, isLoading: endedLoading } = useQuery({
+    queryKey: ["hasQuizPassEnded", quizPassId],
+    queryFn: () => hasQuizPassEnded({ quizPassId }),
+  });
+
   const roomId = useRef(`quiz-pass-${quizPassId}`);
+
+  const goToResults = () => {
+    router.replace(`/quiz/${quizId}/results/${quizPassId}`);
+  };
 
   const trackTime = (time: number) => {
     setTimeRemaining(time);
-    console.log(time);
   };
 
   const handleSetAnswer = (questionId: number) => (answer: number) => {
@@ -51,8 +61,12 @@ export default function Page({
     });
 
     supabase.removeChannel(channel);
+    setTimeRemaining(0);
   };
-  console.log(quiz);
+
+  useEffect(() => {
+    if (timeRemaining <= 0) router.replace(`/quiz/results/${quizPassId}`);
+  }, [quizId, quizPassId, router, timeRemaining]);
 
   useEffect(() => {
     if (!quiz || "error" in quiz || quizPassId === "read-only") return;
@@ -61,7 +75,6 @@ export default function Page({
     let channel: RealtimeChannel;
 
     const start = async () => {
-      console.log(quizPassId);
       await startQuiz({ quizPassId });
 
       channel = supabase.channel(roomId.current);
@@ -91,7 +104,8 @@ export default function Page({
     };
   }, [quiz, quizPassId, answers]);
 
-  if (!quiz || quizLoading) return <h1>Test se načítá</h1>;
+  if (!quiz || quizLoading || endedLoading || ended)
+    return <h1>Test se načítá</h1>;
 
   if ("error" in quiz) return <h1>Chyba: {quiz.error.message}</h1>;
 

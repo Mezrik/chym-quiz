@@ -13,7 +13,5 @@ export default function Page({
     queryFn: () => getQuizPassResults({ quizPassId }),
   });
 
-  console.log(results);
-
   return <div className="box"></div>;
 }
