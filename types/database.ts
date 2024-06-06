@@ -14,7 +14,7 @@ export type Database = {
           author_email: string
           created_at: string
           id: string
-          seconds_per_question: number | null
+          seconds_per_question: number
           self_test: boolean
           show_results: boolean | null
         }
@@ -22,7 +22,7 @@ export type Database = {
           author_email: string
           created_at?: string
           id?: string
-          seconds_per_question?: number | null
+          seconds_per_question: number
           self_test?: boolean
           show_results?: boolean | null
         }
@@ -30,7 +30,7 @@ export type Database = {
           author_email?: string
           created_at?: string
           id?: string
-          seconds_per_question?: number | null
+          seconds_per_question?: number
           self_test?: boolean
           show_results?: boolean | null
         }

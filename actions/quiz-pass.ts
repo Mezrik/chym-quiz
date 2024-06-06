@@ -181,14 +181,12 @@ export const getQuizPassResults = async ({
 
   const quizInstance = await supabase
     .from("quiz_instance")
-    .select(`quiz_set(id, name, quiz_question(id, type))`)
+    .select(`seconds_per_question ,quiz_set(id, name, quiz_question(id, type))`)
     .eq("id", data.quiz_instance_id)
     .single();
 
   if (quizInstance.error)
     return { error: { message: quizInstance.error.message } } as ServerError;
-
-  // TODO: evaluate results
 
   const setsCorrectAnwers: Record<number, number> = {};
   const typeCorrectAnswers: Partial<
@@ -249,7 +247,16 @@ export const getQuizPassResults = async ({
     { setsQuestions: {}, typeQuestions: {}, total: 0 }
   );
 
+  const takenTime =
+    data.end && data.start
+      ? (new Date(data.end).getTime() - new Date(data.start).getTime()) / 1000
+      : null;
+
   return {
+    filledIn: data.end,
+    numberOfQuestions: questionCounts.total,
+    maxTime: quizInstance.data.seconds_per_question * questionCounts.total,
+    takenTime,
     totalCorrectPercentage:
       (correctAnswers.length / questionCounts.total) * 100,
     setsCorrectPercentage: Object.entries(questionCounts.setsQuestions).reduce(
