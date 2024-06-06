@@ -31,7 +31,7 @@ export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
   const { data, error } = await supabase
     .from("quiz_instance_pass")
     .select(
-      `start, end, quiz_instance(seconds_per_question, quiz_question(count))`
+      `start, end, quiz_instance(seconds_per_question, quiz_set(quiz_question(count)))`
     )
     .eq("id", quizPassId)
     .single();
@@ -43,7 +43,11 @@ export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
       error: { message: "Quiz already started or ended" },
     } as ServerError;
 
-  const questionsCount = data.quiz_instance?.quiz_question?.[0].count ?? 0;
+  const questionsCount =
+    data?.quiz_instance?.quiz_set
+      .flatMap(({ quiz_question }) => quiz_question)
+      .map(({ count }) => count)
+      .reduce((acc, val) => acc + val, 0) ?? 0;
 
   const totalTime =
     (data?.quiz_instance?.seconds_per_question ?? 0) * questionsCount;

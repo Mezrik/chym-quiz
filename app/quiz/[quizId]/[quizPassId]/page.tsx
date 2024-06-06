@@ -52,6 +52,7 @@ export default function Page({
 
     supabase.removeChannel(channel);
   };
+  console.log(quiz);
 
   useEffect(() => {
     if (!quiz || "error" in quiz || quizPassId === "read-only") return;
@@ -60,6 +61,7 @@ export default function Page({
     let channel: RealtimeChannel;
 
     const start = async () => {
+      console.log(quizPassId);
       await startQuiz({ quizPassId });
 
       channel = supabase.channel(roomId.current);
@@ -87,7 +89,7 @@ export default function Page({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [quiz, quizPassId]);
+  }, [quiz, quizPassId, answers]);
 
   if (!quiz || quizLoading) return <h1>Test se načítá</h1>;
 
