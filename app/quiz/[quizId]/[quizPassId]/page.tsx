@@ -93,7 +93,7 @@ export default function Page({
 
   if ("error" in quiz) return <h1>Chyba: {quiz.error.message}</h1>;
 
-  const questionsCount = quiz.quiz_instance_question.length ?? 0;
+  const questionsCount = quiz.questions?.length ?? 0;
   const totalTime = questionsCount * (quiz.seconds_per_question ?? 0);
 
   return (
@@ -104,7 +104,7 @@ export default function Page({
           <div>{timeDigital(Math.round(timeRemaining / 1000))}</div>
         </div>
       )}
-      {quiz.quiz_instance_question.map(({ quiz_question: q }) =>
+      {quiz.questions?.map((q) =>
         q ? (
           <Question
             key={q.id}

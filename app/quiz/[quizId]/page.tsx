@@ -27,8 +27,10 @@ export default function Page({ params }: { params: { quizId: string } }) {
 
   if ("error" in quiz) return <h1>Chyba: {quiz.error.message}</h1>;
 
-  const questionsCount = quiz.quiz_instance_question[0].count ?? 0;
+  const questionsCount = quiz.questionsCount ?? 0;
   const totalTime = questionsCount * (quiz.seconds_per_question ?? 0);
+
+  console.log(quiz);
 
   const handleStartQuiz = async () => {
     const data = await mutateAsync("test_name");
@@ -46,7 +48,7 @@ export default function Page({ params }: { params: { quizId: string } }) {
           Test obsahuje{" "}
           {
             <span className="text-orange-500 font-bold">
-              {quiz.quiz_instance_question.length} otázek
+              {questionsCount} otázek
             </span>
           }{" "}
           a na jeho vyplnění máte maximálně{" "}

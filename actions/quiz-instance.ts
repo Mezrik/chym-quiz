@@ -34,27 +34,12 @@ export const insertNewQuizInstance = async ({
 
   if (error) return { error: { message: error.message } } as ServerError;
 
-  // need to pick questions from the selected quiz sets and insert them into the quiz_instance_question table
-
-  const quizSets = await supabase
-    .from("quiz_set")
-    .select(`*, quiz_question(*)`)
-    .in("id", quizSetIds);
-
-  if (quizSets.error)
-    return { error: { message: quizSets.error.message } } as ServerError;
-
-  console.log(quizSets.data);
-  const quizSetQuestions = pickRandomQuestions(
-    quizSets.data.map((quizSet) => quizSet.quiz_question.map((q) => q.id))
-  );
-
   const { error: quizInstanceError } = await supabase
-    .from("quiz_instance_question")
+    .from("quiz_instance_set")
     .insert(
-      quizSetQuestions.map((questionId) => ({
+      quizSetIds.map((quizSetId) => ({
         quiz_instance_id: data[0].id,
-        quiz_question_id: questionId,
+        quiz_set_id: quizSetId,
       }))
     );
 
@@ -70,14 +55,19 @@ export const getQuizReadData = async ({ quizId }: { quizId: string }) => {
   const { error, data } = await supabase
     .from("quiz_instance")
     .select(
-      `id, seconds_per_question, self_test, show_results, quiz_instance_question(count)`
+      `id, seconds_per_question, self_test, show_results, quiz_set(quiz_question(count))`
     )
     .eq("id", quizId)
     .single();
 
+  const questionsCount = data?.quiz_set?.reduce(
+    (acc, { quiz_question }) => acc + quiz_question[0].count,
+    0
+  );
+
   if (error) return { error: { message: error.message } } as ServerError;
 
-  return data;
+  return { ...data, questionsCount };
 };
 
 export const getQuizReadDataFull = async ({ quizId }: { quizId: string }) => {
@@ -86,12 +76,17 @@ export const getQuizReadDataFull = async ({ quizId }: { quizId: string }) => {
   const { error, data } = await supabase
     .from("quiz_instance")
     .select(
-      `id, seconds_per_question, self_test, show_results, quiz_instance_question(id, quiz_question(id, text, quiz_question_answer(id, text)))`
+      `id, seconds_per_question, self_test, show_results, quiz_set(quiz_question(id, text, quiz_question_answer(id, text)))`
     )
     .eq("id", quizId)
     .single();
 
+  const questions = data?.quiz_set.flatMap(
+    ({ quiz_question }) => quiz_question
+  );
+
   if (error) return { error: { message: error.message } } as ServerError;
 
-  return data;
+  const { quiz_set: _, ...rest } = data;
+  return { ...rest, questions };
 };

@@ -117,38 +117,32 @@ export type Database = {
           },
         ]
       }
-      quiz_instance_question: {
+      quiz_instance_set: {
         Row: {
-          created_at: string
-          id: number
-          quiz_instance_id: string | null
-          quiz_question_id: number
+          quiz_instance_id: string
+          quiz_set_id: number
         }
         Insert: {
-          created_at?: string
-          id?: number
-          quiz_instance_id?: string | null
-          quiz_question_id: number
+          quiz_instance_id: string
+          quiz_set_id: number
         }
         Update: {
-          created_at?: string
-          id?: number
-          quiz_instance_id?: string | null
-          quiz_question_id?: number
+          quiz_instance_id?: string
+          quiz_set_id?: number
         }
         Relationships: [
           {
-            foreignKeyName: "quiz_instance_question_quiz_instance_id_fkey"
+            foreignKeyName: "quiz_instance_set_quiz_instance_id_fkey"
             columns: ["quiz_instance_id"]
             isOneToOne: false
             referencedRelation: "quiz_instance"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "quiz_instance_question_quiz_question_id_fkey"
-            columns: ["quiz_question_id"]
+            foreignKeyName: "quiz_instance_set_quiz_set_id_fkey"
+            columns: ["quiz_set_id"]
             isOneToOne: false
-            referencedRelation: "quiz_question"
+            referencedRelation: "quiz_set"
             referencedColumns: ["id"]
           },
         ]
