@@ -157,21 +157,32 @@ export const getQuizPassResults = async ({
   const { data, error } = await supabase
     .from("quiz_instance_pass")
     .select(
-      `id, passer_name, start, end, quiz_instance_id, quiz_instance_pass_answer(id, quiz_question(type), quiz_question_answer(id, text, is_correct))`
+      `
+      id, 
+      passer_name, 
+      start, 
+      end, 
+      quiz_instance_id, 
+      quiz_instance_pass_answer(
+        id, 
+        quiz_question(type, quiz_set(id)), 
+        quiz_question_answer(id, text, is_correct)
+      )`
     )
-    .eq("id", quizPassId);
+    .eq("id", quizPassId)
+    .single();
 
   if (error) return { error: { message: error.message } } as ServerError;
 
-  if (data?.[0].quiz_instance_id === null)
+  if (data?.quiz_instance_id === null)
     return {
       error: { message: "Quiz pass does not have assigned instance" },
     } as ServerError;
 
   const quizInstance = await supabase
     .from("quiz_instance")
-    .select(`quiz_instance_set(quiz_question(id, type))`)
-    .eq("id", data?.[0].quiz_instance_id)
+    .select(`quiz_set(id, name, quiz_question(id, type))`)
+    .eq("id", data.quiz_instance_id)
     .single();
 
   if (quizInstance.error)
@@ -179,5 +190,96 @@ export const getQuizPassResults = async ({
 
   // TODO: evaluate results
 
-  return data;
+  const setsCorrectAnwers: Record<number, number> = {};
+  const typeCorrectAnswers: Partial<
+    Record<Database["public"]["Enums"]["chart_type"], number>
+  > = {};
+
+  const correctAnswers = data.quiz_instance_pass_answer.filter(
+    ({ quiz_question_answer, quiz_question }) => {
+      if (!quiz_question_answer?.is_correct) return false;
+
+      const quizSetId = quiz_question?.quiz_set[0].id;
+
+      if (quizSetId) {
+        if (!setsCorrectAnwers[quizSetId]) {
+          setsCorrectAnwers[quizSetId] = 0;
+        }
+        setsCorrectAnwers[quizSetId] += 1;
+      }
+
+      const type = quiz_question?.type;
+      if (type) {
+        if (!typeCorrectAnswers[type]) {
+          typeCorrectAnswers[type] = 0;
+        }
+        typeCorrectAnswers[type]! += 1;
+      }
+
+      return quiz_question_answer?.is_correct;
+    }
+  );
+
+  const questionCounts = quizInstance.data.quiz_set.reduce<{
+    setsQuestions: Record<number, { count: number; name: string }>;
+    typeQuestions: Partial<
+      Record<Database["public"]["Enums"]["chart_type"], number>
+    >;
+    total: number;
+  }>(
+    (acc, { quiz_question, name, id }) => {
+      return {
+        total: acc.total + quiz_question.length,
+        setsQuestions: {
+          ...acc.setsQuestions,
+          [id]: {
+            count: quiz_question.length,
+            name: name ?? "",
+          },
+        },
+        typeQuestions: quiz_question.reduce(
+          (questions, { type }) => ({
+            ...questions,
+            [type]: (questions[type] || 0) + 1,
+          }),
+          acc.typeQuestions
+        ),
+      };
+    },
+    { setsQuestions: {}, typeQuestions: {}, total: 0 }
+  );
+
+  return {
+    totalCorrectPercentage:
+      (correctAnswers.length / questionCounts.total) * 100,
+    setsCorrectPercentage: Object.entries(questionCounts.setsQuestions).reduce(
+      (acc, [key, value]) => {
+        return {
+          ...acc,
+          [key]: {
+            percentage:
+              ((setsCorrectAnwers[key as unknown as number] ?? 0) /
+                value.count) *
+              100,
+            name: value.name,
+          },
+        };
+      },
+      {} as Record<number, { percentage: number; name: string }>
+    ),
+    typesCorrectPercentage: Object.entries(questionCounts.typeQuestions).reduce(
+      (acc, [key, value]) => {
+        return {
+          ...acc,
+          [key]:
+            ((typeCorrectAnswers[
+              key as Database["public"]["Enums"]["chart_type"]
+            ] ?? 0) /
+              value) *
+            100,
+        };
+      },
+      {} as Partial<Record<Database["public"]["Enums"]["chart_type"], number>>
+    ),
+  };
 };

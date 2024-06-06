@@ -38,10 +38,6 @@ export default function Page({
 
   const roomId = useRef(`quiz-pass-${quizPassId}`);
 
-  const goToResults = () => {
-    router.replace(`/quiz/${quizId}/results/${quizPassId}`);
-  };
-
   const trackTime = (time: number) => {
     setTimeRemaining(time);
   };
