@@ -165,6 +165,8 @@ export const getQuizPassResults = async ({
       quiz_instance_id, 
       quiz_instance_pass_answer(
         id, 
+        quiz_question_id,
+        quiz_question_answer_id,
         quiz_question(type, quiz_set(id)), 
         quiz_question_answer(id, text, is_correct)
       )`
@@ -181,7 +183,21 @@ export const getQuizPassResults = async ({
 
   const quizInstance = await supabase
     .from("quiz_instance")
-    .select(`seconds_per_question ,quiz_set(id, name, quiz_question(id, type))`)
+    .select(
+      `seconds_per_question, 
+      show_results, 
+      self_test, 
+      quiz_set(
+        id, 
+        name, 
+        quiz_question(
+          id, 
+          text, 
+          type,
+          quiz_question_answer(id, text, is_correct)
+        )
+      )`
+    )
     .eq("id", data.quiz_instance_id)
     .single();
 
@@ -217,6 +233,20 @@ export const getQuizPassResults = async ({
       return quiz_question_answer?.is_correct;
     }
   );
+
+  const answers = data.quiz_instance_pass_answer.reduce<
+    Record<number, number | null>
+  >(
+    (acc, { quiz_question_id, quiz_question_answer_id }) => ({
+      ...acc,
+      [quiz_question_id]: quiz_question_answer_id,
+    }),
+    {}
+  );
+
+  const questions = quizInstance.data.quiz_set
+    .flatMap(({ quiz_question }) => quiz_question)
+    .map((q) => ({ ...q, userAnwer: answers[q.id] }));
 
   const questionCounts = quizInstance.data.quiz_set.reduce<{
     setsQuestions: Record<number, { count: number; name: string }>;
@@ -259,6 +289,10 @@ export const getQuizPassResults = async ({
     takenTime,
     totalCorrectPercentage:
       (correctAnswers.length / questionCounts.total) * 100,
+    questions:
+      quizInstance.data.self_test || quizInstance.data.show_results
+        ? questions
+        : null,
     setsCorrectPercentage: Object.entries(questionCounts.setsQuestions).reduce(
       (acc, [key, value]) => {
         return {

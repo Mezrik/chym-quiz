@@ -1,6 +1,7 @@
 "use client";
 
 import { getQuizPassResults } from "@/actions/quiz-pass";
+import { Question } from "@/components/quiz/question";
 import { timeFormat } from "@/utils/time";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -106,6 +107,16 @@ export default function Page({
           )}
         </div>
       </div>
+      {results.questions?.map((q) => (
+        <Question
+          key={q.id}
+          id={q.id}
+          text={q?.text}
+          answers={q?.quiz_question_answer ?? []}
+          defaultValue={q.userAnwer}
+          readOnly
+        />
+      ))}
     </div>
   );
 }

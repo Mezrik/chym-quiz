@@ -26,7 +26,7 @@ export const insertNewQuizInstance = async ({
     .from("quiz_instance")
     .insert({
       author_email: email ?? "",
-      seconds_per_question: timeLimit,
+      seconds_per_question: timeLimit ?? 0,
       self_test: selfTest,
       show_results: showResults,
     })
