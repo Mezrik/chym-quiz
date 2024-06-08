@@ -3,9 +3,12 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "@/components/mode-toggle";
 
 import { Providers } from "./providers";
+import { NavigationMenuDemo } from "./navigation";
+import Logo from "@/components/logo";
+import { ModeToggle } from "@/components/mode-toggle";
+import Link from "next/link";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -26,13 +29,21 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "relative min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
         <Providers>
-          <main className="relative container mx-auto max-w-7xl z-10 px-6 mb-12 flex-grow min-h-screen">
-            <ModeToggle />
+          <header className="relative mx-auto max-w-7xl px-6 flex gap-8 pt-6 pb-8 z-30">
+            <Link href="/">
+              <Logo className="size-10" />
+            </Link>
+            <NavigationMenuDemo />
+            <div className="ml-auto">
+              <ModeToggle />
+            </div>
+          </header>
+          <main className="relative container mx-auto max-w-7xl px-6 mb-12 flex-grow min-h-screen">
             <div className="grid grid-cols-12">{children}</div>
           </main>
         </Providers>
