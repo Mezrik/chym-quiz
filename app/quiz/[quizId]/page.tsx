@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { getQuizReadData } from "@/actions/quiz-instance";
 import { timeFormat } from "@/utils/time";
@@ -11,6 +11,7 @@ import { initializeQuiz } from "@/actions/quiz-pass";
 
 export default function Page({ params }: { params: { quizId: string } }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { quizId } = params;
 
   const { data: quiz, isLoading: quizLoading } = useQuery({
@@ -27,11 +28,20 @@ export default function Page({ params }: { params: { quizId: string } }) {
 
   if ("error" in quiz) return <h1>Chyba: {quiz.error.message}</h1>;
 
+  if (!searchParams.get("name")) {
+    return (
+      <div className="space-y-2">
+        <h1>Chyba: není definováno jméno uživatele</h1>
+        <Button onClick={() => router.replace("/")}>Zpět</Button>
+      </div>
+    );
+  }
+
   const questionsCount = quiz.questionsCount ?? 0;
   const totalTime = questionsCount * (quiz.seconds_per_question ?? 0);
 
   const handleStartQuiz = async () => {
-    const data = await mutateAsync("test_name");
+    const data = await mutateAsync(searchParams.get("name")!);
 
     // TODO: Error handling
     if ("error" in data) return;

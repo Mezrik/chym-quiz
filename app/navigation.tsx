@@ -19,7 +19,7 @@ import Logo from "@/components/logo";
 const components: { title: string; href: string; description: string }[] = [
   {
     title: "Mám kód od lektora",
-    href: "/docs/primitives/alert-dialog",
+    href: "/quiz/entry",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non placerat lorem, eu aliquet dolor. Maecenas venenatis sapien mi, ac volutpat justo facilisis non. In id tellus dui.",
   },
