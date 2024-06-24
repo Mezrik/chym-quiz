@@ -3,6 +3,7 @@ import { FC } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type QuestionAnswer = Pick<
   Database["public"]["Tables"]["quiz_question_answer"]["Row"],
@@ -16,19 +17,21 @@ export const Question: FC<{
   onAnswer?: (answerId: number) => void;
   readOnly?: boolean;
   defaultValue?: number | null;
-  correctValue?: number | null;
-}> = ({
-  text,
-  id,
-  answers,
-  onAnswer,
-  readOnly,
-  defaultValue,
-  correctValue,
-}) => {
+  imageUrl?: string | null;
+}> = ({ text, id, answers, onAnswer, readOnly, defaultValue, imageUrl }) => {
   return (
     <div className="box">
       <h2 className="text-lg font-semibold mb-4">{text}</h2>
+      {imageUrl && (
+        <Image
+          src={imageUrl}
+          alt={text}
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: "100%", height: "auto" }}
+        />
+      )}
       <RadioGroup
         onValueChange={(id) => onAnswer?.(parseInt(id, 10))}
         disabled={readOnly}

@@ -163,18 +163,21 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          image_url: string | null
           text: string
           type: Database["public"]["Enums"]["chart_type"]
         }
         Insert: {
           created_at?: string
           id?: number
+          image_url?: string | null
           text: string
           type?: Database["public"]["Enums"]["chart_type"]
         }
         Update: {
           created_at?: string
           id?: number
+          image_url?: string | null
           text?: string
           type?: Database["public"]["Enums"]["chart_type"]
         }

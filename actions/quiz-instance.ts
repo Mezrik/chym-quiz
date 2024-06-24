@@ -76,7 +76,7 @@ export const getQuizReadDataFull = async ({ quizId }: { quizId: string }) => {
   const { error, data } = await supabase
     .from("quiz_instance")
     .select(
-      `id, seconds_per_question, self_test, show_results, quiz_set(quiz_question(id, text, quiz_question_answer(id, text)))`
+      `id, seconds_per_question, self_test, show_results, quiz_set(quiz_question(id, text, image_url, quiz_question_answer(id, text)))`
     )
     .eq("id", quizId)
     .single();

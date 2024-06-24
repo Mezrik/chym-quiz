@@ -115,6 +115,7 @@ export default function Page({
           answers={q?.quiz_question_answer ?? []}
           defaultValue={q.userAnwer}
           readOnly
+          imageUrl={q?.image_url}
         />
       ))}
     </div>

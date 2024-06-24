@@ -362,6 +362,7 @@ export const getQuizPassResults = async ({
           id, 
           text, 
           type,
+          image_url,
           quiz_question_answer(id, text, is_correct)
         )
       )`

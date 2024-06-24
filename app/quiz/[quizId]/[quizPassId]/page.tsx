@@ -110,27 +110,30 @@ export default function Page({
   const totalTime = questionsCount * (quiz.seconds_per_question ?? 0);
 
   return (
-    <div>
+    <div className="flex flex-col">
       {!readOnly && (
         <div className="flex gap-4 items-center">
           <Progress value={(timeRemaining / (totalTime * 1000)) * 100} />
           <div>{timeDigital(Math.round(timeRemaining / 1000))}</div>
         </div>
       )}
-      {quiz.questions?.map((q) =>
-        q ? (
-          <Question
-            key={q.id}
-            id={q.id}
-            text={q?.text}
-            answers={q?.quiz_question_answer}
-            onAnswer={handleSetAnswer(q.id)}
-            readOnly={readOnly}
-          />
-        ) : null
-      )}
+      <div className="space-y-4 mt-6">
+        {quiz.questions?.map((q) =>
+          q ? (
+            <Question
+              key={q.id}
+              id={q.id}
+              text={q?.text}
+              answers={q?.quiz_question_answer}
+              onAnswer={handleSetAnswer(q.id)}
+              readOnly={readOnly}
+              imageUrl={q.image_url}
+            />
+          ) : null
+        )}
+      </div>
       {!readOnly && (
-        <Button type="button" onClick={handleSubmit}>
+        <Button type="button" onClick={handleSubmit} className="mt-8 ml-auto">
           Odevzdat
         </Button>
       )}
