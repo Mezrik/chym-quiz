@@ -213,28 +213,29 @@ export const SetupForm: React.FC<{
             )}
           />
         </fieldset>
-        <fieldset className="box space-y-5">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-mail</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="email@email.cz"
-                    {...field}
-                    value={field.value ?? ""}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Zadejte e-mail pokud chcete zaslat výsledky
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {!selfTest && (
+        {!selfTest && (
+          <fieldset className="box space-y-5">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E-mail</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="email@email.cz"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Zadejte e-mail pokud chcete zaslat výsledky
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="withoutUserResults"
@@ -254,8 +255,8 @@ export const SetupForm: React.FC<{
                 </FormItem>
               )}
             />
-          )}
-        </fieldset>
+          </fieldset>
+        )}
         <div className="flex gap-2">
           <Button type="submit">Vytvořit test</Button>
           {!selfTest && (

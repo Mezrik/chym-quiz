@@ -1,11 +1,15 @@
 "use server";
 
 import { createClient } from "@/utils/server";
-import { pickRandomQuestions } from "@/utils/quiz-setup";
+import { Resend } from "resend";
+import { CodeMailTemplate } from "@/components/email/code-mail-template";
+import { headers } from "next/headers";
 
 type ServerError = {
   error: { message: string };
 };
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const insertNewQuizInstance = async ({
   quizSetIds,
@@ -45,6 +49,21 @@ export const insertNewQuizInstance = async ({
 
   if (quizInstanceError)
     return { error: { message: quizInstanceError.message } } as ServerError;
+
+  const headersList = headers();
+  const quizUrl = `https://${headersList.get("host")}/quiz/results/total/${
+    data[0].id
+  }`;
+
+  if (email) {
+    await resend.emails.send({
+      from: "Acme <onboarding@resend.dev>",
+      to: email,
+      subject: "Nový kvíz!",
+      react: CodeMailTemplate({ code: data[0].id, quizUrl: quizUrl ?? "" }),
+      text: `Kód pro studenty: ${data[0].id}, Výsledky jsou dostupné zde: ${quizUrl}`,
+    });
+  }
 
   return data;
 };
