@@ -17,10 +17,17 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { timeFormat } from "@/utils/time";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ServerError, getQuizSets } from "@/actions/quiz-set";
+import { Question } from "../question";
 
-type QuizSet = Database["public"]["Tables"]["quiz_set"]["Row"] & {
-  quiz_set_question: Array<{ count: number }>;
-};
+type QuizSets = Exclude<Awaited<ReturnType<typeof getQuizSets>>, ServerError>;
 
 const FormSchema = z
   .object({
@@ -54,7 +61,7 @@ const FormSchema = z
   });
 
 export const SetupForm: React.FC<{
-  quizSets: QuizSet[];
+  quizSets: QuizSets;
   quizSetsLoading?: boolean;
   handleSubmit: (
     values: z.infer<typeof FormSchema> & { selfTest?: boolean }
@@ -79,10 +86,16 @@ export const SetupForm: React.FC<{
 
   const questionsCount = quizSets
     .filter((set) => form.watch("quizSets", undefined)?.includes(set.id))
-    .map((set) => set.quiz_set_question.reduce((a, b) => a + b.count, 0))
+    .map((set) => set.quiz_set_question.length)
     .reduce((a, b) => a + b, 0);
 
   const totalTime = questionsCount * (form.watch("timeLimit") ?? 0);
+
+  const selectedQuizSetsQuestions = quizSets
+    .filter((set) => form.watch("quizSets", undefined)?.includes(set.id))
+    .flatMap(({ quiz_set_question }) =>
+      quiz_set_question.map(({ quiz_question }) => quiz_question)
+    );
 
   return (
     <Form {...form}>
@@ -245,7 +258,39 @@ export const SetupForm: React.FC<{
         </fieldset>
         <div className="flex gap-2">
           <Button type="submit">Vytvořit test</Button>
-          {!selfTest && <Button variant={"outline"}>Náhled otázek</Button>}
+          {!selfTest && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  disabled={selectedQuizSetsQuestions.length <= 0}
+                >
+                  Náhled otázek
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[800px] max-h-[80vh] flex flex-col">
+                <DialogHeader>
+                  <DialogTitle>Náhled otázek</DialogTitle>
+                </DialogHeader>
+                <div className="overflow-y-auto h-full">
+                  <div className="flex flex-col gap-4 py-4">
+                    {selectedQuizSetsQuestions?.map((q) =>
+                      q ? (
+                        <Question
+                          key={q.id}
+                          id={q.id}
+                          text={q?.text}
+                          answers={q?.quiz_question_answer ?? []}
+                          readOnly
+                          imageUrl={q?.image_url}
+                        />
+                      ) : null
+                    )}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </form>
     </Form>

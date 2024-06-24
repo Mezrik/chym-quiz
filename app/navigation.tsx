@@ -114,16 +114,13 @@ export function NavigationMenuDemo() {
                     </a>
                   </NavigationMenuLink>
                 </li>
-                <ListItem href="/docs" title="O co jde">
+                <ListItem href="/about" title="O co jde">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </ListItem>
-                <ListItem href="/docs/installation" title="Proč vznikl">
+                <ListItem href="/about" title="Proč vznikl">
                   Donec non placerat lorem, eu aliquet dolor.
                 </ListItem>
-                <ListItem
-                  href="/docs/primitives/typography"
-                  title="Kdo na něm pracoval"
-                >
+                <ListItem href="/about" title="Kdo na něm pracoval">
                   Maecenas venenatis sapien mi, ac volutpat justo facilisis non.
                 </ListItem>
               </ul>
