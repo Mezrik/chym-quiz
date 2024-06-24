@@ -46,18 +46,15 @@ export default function Page({
     setAnswers({ ...answers, [questionId]: answer });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const supabase = createClient();
     const channel = supabase.channel(roomId.current);
 
-    channel.send({
+    await channel.send({
       type: "broadcast",
       event: "submit",
       payload: answers,
     });
-
-    supabase.removeChannel(channel);
-    setTimeRemaining(0);
   };
 
   useEffect(() => {
@@ -89,6 +86,10 @@ export default function Page({
           });
 
           supabase.removeChannel(channel);
+        })
+        .on("broadcast", { event: "redirect" }, () => {
+          supabase.removeChannel(channel);
+          setTimeRemaining(0);
         })
         .subscribe();
     };

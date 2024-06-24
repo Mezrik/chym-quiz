@@ -69,7 +69,7 @@ export default function Page({
             Úspěšnost:{" "}
             {
               <span className="text-green-500">
-                {Math.round(results.totalCorrectPercentage)}%
+                {Math.round(results.totalCorrectPercentage ?? 0)}%
               </span>
             }
           </p>
@@ -80,7 +80,7 @@ export default function Page({
           <h3 className="text-lg font-light uppercase text-gray-400">
             Průměr za okruhy{" "}
           </h3>
-          {Object.entries(results.setsCorrectPercentage).map(
+          {Object.entries(results.setsCorrectPercentage ?? 0).map(
             ([setId, { percentage, name }]) => (
               <p key={setId}>
                 <span>{`${name}: `}</span>
@@ -95,7 +95,7 @@ export default function Page({
           <h3 className="text-lg font-light uppercase text-gray-400">
             Průměr za jednotlivé grafy{" "}
           </h3>
-          {Object.entries(results.typesCorrectPercentage).map(
+          {Object.entries(results.typesCorrectPercentage ?? 0).map(
             ([type, percentage]) => (
               <p key={type}>
                 <span>{`${type}: `}</span>

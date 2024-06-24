@@ -28,6 +28,7 @@ const FormSchema = z
       .array(z.number())
       .nonempty({ message: "Vyberte alespoň jeden okruh" }),
     withoutTimeLimit: z.boolean(),
+    withoutUserResults: z.boolean(),
     timeLimit: z
       .union([
         z.coerce
@@ -55,8 +56,11 @@ const FormSchema = z
 export const SetupForm: React.FC<{
   quizSets: QuizSet[];
   quizSetsLoading?: boolean;
-  handleSubmit: (values: z.infer<typeof FormSchema>) => void;
-}> = ({ quizSets, handleSubmit, quizSetsLoading }) => {
+  handleSubmit: (
+    values: z.infer<typeof FormSchema> & { selfTest?: boolean }
+  ) => void;
+  selfTest?: boolean;
+}> = ({ quizSets, handleSubmit, quizSetsLoading, selfTest }) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -64,12 +68,14 @@ export const SetupForm: React.FC<{
       withoutTimeLimit: false,
       timeLimit: 30,
       email: "",
+      withoutUserResults: false,
     },
   });
 
   const disableTimeLimit = form.watch("withoutTimeLimit", true);
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => handleSubmit(data);
+  const onSubmit = (data: z.infer<typeof FormSchema>) =>
+    handleSubmit({ ...data, selfTest });
 
   const questionsCount = quizSets
     .filter((set) => form.watch("quizSets", undefined)?.includes(set.id))
@@ -215,8 +221,32 @@ export const SetupForm: React.FC<{
               </FormItem>
             )}
           />
+          {!selfTest && (
+            <FormField
+              control={form.control}
+              name="withoutUserResults"
+              render={({ field }) => (
+                <FormItem className="space-x-3 space-y-0 flex flex-row items-start">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      Neukazovat podrobné výsledky uživatelům
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+          )}
         </fieldset>
-        <Button type="submit">Vytvořit test</Button>
+        <div className="flex gap-2">
+          <Button type="submit">Vytvořit test</Button>
+          {!selfTest && <Button variant={"outline"}>Náhled otázek</Button>}
+        </div>
       </form>
     </Form>
   );

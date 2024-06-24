@@ -25,13 +25,13 @@ const components: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Potřebuji otestovat skupinu",
-    href: "/docs/primitives/hover-card",
+    href: "/setup-quiz",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non placerat lorem, eu aliquet dolor. Maecenas venenatis sapien mi, ac volutpat justo facilisis non. In id tellus dui.",
   },
   {
     title: "Chci otestovat sebe",
-    href: "/docs/primitives/progress",
+    href: "/setup-quiz?selfTest=true",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non placerat lorem, eu aliquet dolor. Maecenas venenatis sapien mi, ac volutpat justo facilisis non. In id tellus dui.",
   },

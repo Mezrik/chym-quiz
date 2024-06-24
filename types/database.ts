@@ -43,7 +43,11 @@ export type Database = {
           id: string
           passer_name: string
           quiz_instance_id: string | null
+          sets_correct_percentage: Json | null
           start: string | null
+          taken_time: number | null
+          total_correct_percentage: number | null
+          types_correct_percentage: Json | null
         }
         Insert: {
           created_at?: string
@@ -51,7 +55,11 @@ export type Database = {
           id?: string
           passer_name: string
           quiz_instance_id?: string | null
+          sets_correct_percentage?: Json | null
           start?: string | null
+          taken_time?: number | null
+          total_correct_percentage?: number | null
+          types_correct_percentage?: Json | null
         }
         Update: {
           created_at?: string
@@ -59,7 +67,11 @@ export type Database = {
           id?: string
           passer_name?: string
           quiz_instance_id?: string | null
+          sets_correct_percentage?: Json | null
           start?: string | null
+          taken_time?: number | null
+          total_correct_percentage?: number | null
+          types_correct_percentage?: Json | null
         }
         Relationships: [
           {
