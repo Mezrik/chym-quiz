@@ -44,6 +44,11 @@ export const submitQuiz = async ({
 
   await setQuizPassResults({ quizPassId });
 
+  await supabase
+    .from("quiz_instance_pass")
+    .update({ end: new Date().toISOString() })
+    .eq("id", quizPassId);
+
   if (error) return { error: { message: error.message } } as ServerError;
 };
 
