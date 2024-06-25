@@ -66,13 +66,18 @@ export default function Page({ params }: { params: { quizId: string } }) {
             <span className="text-orange-500 font-bold">
               {questionsCount} otázek
             </span>
-          }{" "}
-          a na jeho vyplnění máte maximálně{" "}
-          {
-            <span className="text-orange-500 font-bold">
-              {timeFormat(totalTime)}
-            </span>
           }
+          {!quiz.without_time_limit && (
+            <>
+              {" "}
+              a na jeho vyplnění máte maximálně{" "}
+              {
+                <span className="text-orange-500 font-bold">
+                  {timeFormat(totalTime)}
+                </span>
+              }
+            </>
+          )}
           .
         </AlertDescription>
       </Alert>

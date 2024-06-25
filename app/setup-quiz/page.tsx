@@ -29,6 +29,7 @@ export default function Page() {
           email,
           withoutUserResults,
           selfTest,
+          withoutTimeLimit,
         }) => {
           const data = await mutation.mutateAsync({
             quizSetIds: quizSets,
@@ -36,6 +37,7 @@ export default function Page() {
             email,
             showResults: !withoutUserResults,
             selfTest,
+            withoutTimeLimit,
           });
 
           if ("error" in data) return;

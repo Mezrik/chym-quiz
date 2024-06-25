@@ -79,8 +79,10 @@ export default function Page({
   );
 
   useEffect(() => {
+    if (!quiz || "error" in quiz || quiz.without_time_limit) return;
+
     if (timeRemaining <= 0) handleSubmit(true);
-  }, [handleSubmit, quizId, quizPassId, router, timeRemaining]);
+  }, [handleSubmit, quiz, quizId, quizPassId, router, timeRemaining]);
 
   useEffect(() => {
     if (!quiz || "error" in quiz || quizPassId === "read-only") return;
@@ -152,7 +154,7 @@ export default function Page({
           </Button>
         </div>
       )}
-      {!readOnly && (
+      {!readOnly && !quiz.without_time_limit && (
         <div className="flex gap-4 items-center sticky top-0 bg-white/70">
           {Number.MAX_SAFE_INTEGER === timeRemaining ? (
             <>

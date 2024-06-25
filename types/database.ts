@@ -17,6 +17,7 @@ export type Database = {
           seconds_per_question: number
           self_test: boolean
           show_results: boolean | null
+          without_time_limit: boolean | null
         }
         Insert: {
           author_email: string
@@ -25,6 +26,7 @@ export type Database = {
           seconds_per_question: number
           self_test?: boolean
           show_results?: boolean | null
+          without_time_limit?: boolean | null
         }
         Update: {
           author_email?: string
@@ -33,6 +35,7 @@ export type Database = {
           seconds_per_question?: number
           self_test?: boolean
           show_results?: boolean | null
+          without_time_limit?: boolean | null
         }
         Relationships: []
       }
@@ -271,7 +274,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      chart_type: "histogram" | "pie-chart" | "bar-chart" | "line-chart"
+      chart_type:
+        | "histogram"
+        | "pie-chart"
+        | "bar-chart"
+        | "line-chart"
+        | "cartogram"
+        | "correlation-chart"
     }
     CompositeTypes: {
       [_ in never]: never

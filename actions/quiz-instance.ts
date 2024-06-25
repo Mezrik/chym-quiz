@@ -17,12 +17,14 @@ export const insertNewQuizInstance = async ({
   timeLimit,
   selfTest,
   showResults,
+  withoutTimeLimit,
 }: {
   quizSetIds: number[];
   email?: string | null;
   timeLimit?: number | null;
   selfTest?: boolean;
   showResults?: boolean;
+  withoutTimeLimit?: boolean;
 }) => {
   const supabase = createClient();
 
@@ -33,6 +35,7 @@ export const insertNewQuizInstance = async ({
       seconds_per_question: timeLimit ?? 0,
       self_test: selfTest,
       show_results: showResults,
+      without_time_limit: withoutTimeLimit,
     })
     .select();
 
@@ -74,7 +77,7 @@ export const getQuizReadData = async ({ quizId }: { quizId: string }) => {
   const { error, data } = await supabase
     .from("quiz_instance")
     .select(
-      `id, seconds_per_question, self_test, show_results, quiz_set(quiz_question(count))`
+      `id, seconds_per_question, self_test, show_results, without_time_limit, quiz_set(quiz_question(count))`
     )
     .eq("id", quizId)
     .single();
@@ -95,7 +98,7 @@ export const getQuizReadDataFull = async ({ quizId }: { quizId: string }) => {
   const { error, data } = await supabase
     .from("quiz_instance")
     .select(
-      `id, seconds_per_question, self_test, show_results, quiz_set(quiz_question(id, text, image_url, quiz_question_answer(id, text)))`
+      `id, seconds_per_question, self_test, without_time_limit, show_results, quiz_set(quiz_question(id, text, image_url, quiz_question_answer(id, text)))`
     )
     .eq("id", quizId)
     .single();
