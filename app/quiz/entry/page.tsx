@@ -47,11 +47,12 @@ export default function Page() {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(FormSchema, { async: true }, { mode: "async" }),
     defaultValues: {
       quizId: "",
       name: "",
     },
+    mode: "onBlur",
   });
 
   const onSubmit = (data: z.infer<typeof FormSchema>) =>
