@@ -6,3 +6,10 @@ export const pickRandomQuestions = <T extends string | number>(
 
   return shuffled.slice(0, count);
 };
+
+export const shuffle = <T extends any>(array: T[]): T[] => {
+  return array
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+};

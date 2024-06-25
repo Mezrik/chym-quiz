@@ -1,9 +1,10 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { shuffle } from "@/utils/quiz-setup";
 
 type QuestionAnswer = Pick<
   Database["public"]["Tables"]["quiz_question_answer"]["Row"],
@@ -19,6 +20,10 @@ export const Question: FC<{
   defaultValue?: number | null;
   imageUrl?: string | null;
 }> = ({ text, id, answers, onAnswer, readOnly, defaultValue, imageUrl }) => {
+  const answersShuffled = useMemo(() => {
+    return shuffle(answers);
+  }, [answers]);
+
   return (
     <div className="box">
       <h2 className="text-lg font-semibold mb-4">{text}</h2>
@@ -37,7 +42,7 @@ export const Question: FC<{
         disabled={readOnly}
         defaultValue={`${defaultValue}`}
       >
-        {answers.map((answer) => (
+        {answersShuffled.map((answer) => (
           <div
             className="flex items-center space-x-2"
             key={`answer-${answer.id}`}
