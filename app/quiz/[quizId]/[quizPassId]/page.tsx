@@ -58,24 +58,28 @@ export default function Page({
     setAnswers({ ...answers, [questionId]: answer });
   };
 
-  const handleSubmit = useCallback(() => {
-    if (
-      !warning &&
-      quiz &&
-      !("error" in quiz) &&
-      Object.entries(answers).length != quiz?.questions?.length
-    ) {
-      setWarning(true);
-      return;
-    }
+  const handleSubmit = useCallback(
+    (bypassWarning = false) => {
+      if (
+        !bypassWarning &&
+        !warning &&
+        quiz &&
+        !("error" in quiz) &&
+        Object.entries(answers).length != quiz?.questions?.length
+      ) {
+        setWarning(true);
+        return;
+      }
 
-    submitQuizMutate().then(() =>
-      router.replace(`/quiz/results/${quizPassId}`)
-    );
-  }, [answers, warning, quiz, quizPassId, router, submitQuizMutate]);
+      submitQuizMutate().then(() =>
+        router.replace(`/quiz/results/${quizPassId}`)
+      );
+    },
+    [answers, warning, quiz, quizPassId, router, submitQuizMutate]
+  );
 
   useEffect(() => {
-    if (timeRemaining <= 0) handleSubmit();
+    if (timeRemaining <= 0) handleSubmit(true);
   }, [handleSubmit, quizId, quizPassId, router, timeRemaining]);
 
   useEffect(() => {
@@ -178,7 +182,11 @@ export default function Page({
         )}
       </div>
       {!readOnly && (
-        <Button type="button" onClick={handleSubmit} className="mt-8 ml-auto">
+        <Button
+          type="button"
+          onClick={() => handleSubmit()}
+          className="mt-8 ml-auto"
+        >
           Odevzdat
         </Button>
       )}
@@ -193,7 +201,7 @@ export default function Page({
           </DialogHeader>
 
           <DialogFooter>
-            <Button type="button" onClick={handleSubmit}>
+            <Button type="button" onClick={() => handleSubmit()}>
               Pokračovat
             </Button>
           </DialogFooter>
