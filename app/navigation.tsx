@@ -12,7 +12,12 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/logo";
 
@@ -51,14 +56,15 @@ export function NavigationMenuDemo() {
           </Link>
           <div className="grid gap-2 py-6">
             {components.map((component) => (
-              <Link
-                key={component.title}
-                href={component.href}
-                className="flex w-full items-center py-2 text-lg font-semibold"
-                prefetch={false}
-              >
-                {component.title}
-              </Link>
+              <SheetClose asChild key={component.title}>
+                <Link
+                  href={component.href}
+                  className="flex w-full items-center py-2 text-lg font-semibold"
+                  prefetch={false}
+                >
+                  {component.title}
+                </Link>
+              </SheetClose>
             ))}
             <Link
               href="#"
