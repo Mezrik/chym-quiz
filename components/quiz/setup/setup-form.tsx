@@ -47,7 +47,10 @@ const FormSchema = z
         z.null(),
       ])
       .optional(),
-    email: z.string().email({ message: "Nesprávný email" }),
+    email: z
+      .string()
+      .max(0, { message: "Nesprávný email" })
+      .or(z.string().email({ message: "Nesprávný email" })),
   })
   .superRefine((data, ctx) => {
     if (!data.withoutTimeLimit && data.timeLimit === null) {

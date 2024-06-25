@@ -28,6 +28,8 @@ export const initializeQuiz = async ({
 export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
   const supabase = createClient();
 
+  console.log(quizPassId);
+
   const { data, error } = await supabase
     .from("quiz_instance_pass")
     .select(
@@ -63,6 +65,8 @@ export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
     .from("quiz_instance_pass")
     .update({ start: startDate.toISOString() })
     .eq("id", quizPassId);
+
+  console.log(quizPassId, "start");
 
   const setEnd = async () => {
     await supabase
@@ -111,6 +115,7 @@ export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
 
       tick();
       interval = setInterval(() => {
+        console.log(Date.now());
         if (Date.now() < end) {
           tick();
         } else {
