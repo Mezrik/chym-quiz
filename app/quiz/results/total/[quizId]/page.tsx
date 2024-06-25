@@ -14,8 +14,9 @@ export default function Page({
     queryFn: () => getQuizResults({ quizId }),
   });
 
-  if (!results || "error" in results)
-    return <div>{results?.error.message ?? "Error"}</div>;
+  if (!results || resultsLoading) return <div>Nacitam...</div>;
+
+  if ("error" in results) return <div>{results?.error.message ?? "Error"}</div>;
 
   return (
     <div className="col-span-12 space-y-4">
