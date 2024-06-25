@@ -149,7 +149,7 @@ export default function Page({
         </div>
       )}
       {!readOnly && (
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center sticky top-0 bg-white/70">
           {Number.MAX_SAFE_INTEGER === timeRemaining ? (
             <>
               <Skeleton className="h-4 w-full" />
