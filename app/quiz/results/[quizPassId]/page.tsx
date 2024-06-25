@@ -2,6 +2,7 @@
 
 import { getQuizPassResults } from "@/actions/quiz-pass";
 import { Question } from "@/components/quiz/question";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getChartTypeCaption } from "@/utils/quiz-setup";
 import { timeFormat } from "@/utils/time";
 import { useQuery } from "@tanstack/react-query";
@@ -17,7 +18,16 @@ export default function Page({
     queryFn: () => getQuizPassResults({ quizPassId }),
   });
 
-  if (!results || resultsLoading) return <div>Nacitam...</div>;
+  if (!results || resultsLoading)
+    return (
+      <div className="col-span-12 space-y-4">
+        <h1 className="text-xl font-bold">Výsledky uživatele</h1>
+        <Skeleton className="w-full h-[170px]" />
+        <Skeleton className="w-full h-[170px]" />
+        <Skeleton className="w-full h-[170px]" />
+        <Skeleton className="w-full h-[170px]" />
+      </div>
+    );
   if ("error" in results) return <div>{results.error.message}</div>;
 
   return (

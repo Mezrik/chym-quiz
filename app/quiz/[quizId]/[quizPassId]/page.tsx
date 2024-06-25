@@ -122,7 +122,16 @@ export default function Page({
   }, [quiz, quizPassId]);
 
   if (!quiz || quizLoading || endedLoading || ended)
-    return <h1>Test se načítá</h1>;
+    return (
+      <div className="flex flex-col">
+        <Skeleton className="h-4 w-full" />
+        <div className="mt-6 flex flex-col space-y-4">
+          <Skeleton className="h-96 w-full" />
+          <Skeleton className="h-96 w-full " />
+          <Skeleton className="h-96 w-full " />
+        </div>
+      </div>
+    );
 
   if ("error" in quiz) return <h1>Chyba: {quiz.error.message}</h1>;
 

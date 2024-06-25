@@ -8,6 +8,7 @@ import { timeFormat } from "@/utils/time";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { initializeQuiz } from "@/actions/quiz-pass";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Page({ params }: { params: { quizId: string } }) {
   const router = useRouter();
@@ -24,7 +25,14 @@ export default function Page({ params }: { params: { quizId: string } }) {
       initializeQuiz({ quizId, passer_name }),
   });
 
-  if (!quiz || quizLoading) return <h1>Test se načítá</h1>;
+  if (!quiz || quizLoading)
+    return (
+      <div className="flex flex-col space-y-6">
+        <Skeleton className="w-full h-[62px]" />
+        <Skeleton className="w-[600px] h-6" />
+        <Skeleton className="w-[141px] h-11" />
+      </div>
+    );
 
   if ("error" in quiz) return <h1>Chyba: {quiz.error.message}</h1>;
 

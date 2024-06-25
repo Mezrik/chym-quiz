@@ -3,6 +3,8 @@ import { getQuizResults } from "@/actions/quiz-instance";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { timeFormat } from "@/utils/time";
+import { getChartTypeCaption } from "@/utils/quiz-setup";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Page({
   params: { quizId },
@@ -14,7 +16,16 @@ export default function Page({
     queryFn: () => getQuizResults({ quizId }),
   });
 
-  if (!results || resultsLoading) return <div>Nacitam...</div>;
+  if (!results || resultsLoading)
+    return (
+      <div className="col-span-12 space-y-4">
+        <h1 className="text-xl font-bold">Kód pro studenty: {quizId}</h1>
+        <Skeleton className="w-full h-[170px]" />
+        <Skeleton className="w-full h-[170px]" />
+        <Skeleton className="w-full h-[170px]" />
+        <Skeleton className="w-full h-[170px]" />
+      </div>
+    );
 
   if ("error" in results) return <div>{results?.error.message ?? "Error"}</div>;
 
@@ -104,7 +115,7 @@ export default function Page({
           {Object.entries(results.averageTypeSuccessRate ?? 0).map(
             ([type, percentage]) => (
               <p key={type}>
-                <span>{`${type}: `}</span>
+                <span>{`${getChartTypeCaption(type)}: `}</span>
                 <span className="text-green-500">
                   {Math.round(percentage)}%
                 </span>
