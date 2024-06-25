@@ -2,6 +2,7 @@
 
 import { getQuizPassResults } from "@/actions/quiz-pass";
 import { Question } from "@/components/quiz/question";
+import { getChartTypeCaption } from "@/utils/quiz-setup";
 import { timeFormat } from "@/utils/time";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -98,7 +99,7 @@ export default function Page({
           {Object.entries(results.typesCorrectPercentage ?? 0).map(
             ([type, percentage]) => (
               <p key={type}>
-                <span>{`${type}: `}</span>
+                <span>{`${getChartTypeCaption(type)}: `}</span>
                 <span className="text-green-500">
                   {Math.round(percentage)}%
                 </span>
