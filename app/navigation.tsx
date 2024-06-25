@@ -21,19 +21,17 @@ const components: { title: string; href: string; description: string }[] = [
     title: "Mám kód od lektora",
     href: "/quiz/entry",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non placerat lorem, eu aliquet dolor. Maecenas venenatis sapien mi, ac volutpat justo facilisis non. In id tellus dui.",
+      "O lektora jste dostali kód pod kterým můžete absolvovat test.",
   },
   {
     title: "Potřebuji otestovat skupinu",
     href: "/setup-quiz",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non placerat lorem, eu aliquet dolor. Maecenas venenatis sapien mi, ac volutpat justo facilisis non. In id tellus dui.",
+    description: "Vytvořte instanci testu pro svoji skupinu.",
   },
   {
     title: "Chci otestovat sebe",
     href: "/setup-quiz?selfTest=true",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non placerat lorem, eu aliquet dolor. Maecenas venenatis sapien mi, ac volutpat justo facilisis non. In id tellus dui.",
+    description: "Vyzkoušejte si test nanečisto.",
   },
 ];
 
@@ -67,7 +65,7 @@ export function NavigationMenuDemo() {
               className="flex w-full items-center py-2 text-lg font-semibold"
               prefetch={false}
             >
-              O projektu
+              O aplikaci
             </Link>
           </div>
         </SheetContent>
@@ -93,7 +91,7 @@ export function NavigationMenuDemo() {
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>O projektu</NavigationMenuTrigger>
+            <NavigationMenuTrigger>O aplikaci</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-6 md:w-[450px] lg:w-[550px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
@@ -102,26 +100,22 @@ export function NavigationMenuDemo() {
                       className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                       href="/"
                     >
-                      <div className="mb-2 mt-4 text-lg font-medium">
+                      <div className="mb-2 text-lg font-medium">
                         Test vizualizační gramotnosti
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Donec non placerat lorem, eu aliquet dolor. Maecenas
-                        venenatis sapien mi, ac volutpat justo facilisis non. In
-                        id tellus dui.
+                        Tato aplikace vznikla v rámci diplomové práce{" "}
+                        <i>
+                          &quot;Tvorba nástroje pro hodnocení vizualizační
+                          gramotnosti&quot;
+                        </i>
+                        .
                       </p>
                     </a>
                   </NavigationMenuLink>
                 </li>
                 <ListItem href="/about" title="O co jde">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </ListItem>
-                <ListItem href="/about" title="Proč vznikl">
-                  Donec non placerat lorem, eu aliquet dolor.
-                </ListItem>
-                <ListItem href="/about" title="Kdo na něm pracoval">
-                  Maecenas venenatis sapien mi, ac volutpat justo facilisis non.
+                  Tvorba nástroje pro hodnocení vizualizační gramotnosti
                 </ListItem>
               </ul>
             </NavigationMenuContent>

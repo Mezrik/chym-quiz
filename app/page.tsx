@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function Home() {
   return (
@@ -16,16 +17,19 @@ export default async function Home() {
               </div>
               <div className="mt-5 max-w-3xl">
                 <p className="text-xl text-foreground">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-                  non placerat lorem, eu aliquet dolor. Maecenas venenatis
-                  sapien mi, ac volutpat justo facilisis non. In id tellus dui
+                  Tento test vám pomůže pochopit silné a slabé stránky vás anebo
+                  vašich studentů v oblasti vizualizační gramotnosti.
                 </p>
               </div>
               <div className="mt-8 gap-3 flex justify-center">
-                <Button size={"lg"}>Začít</Button>
-                <Button size={"lg"} variant={"outline"}>
-                  O projektu
-                </Button>
+                <Link href="/setup-quiz">
+                  <Button size={"lg"}>Vytvořit test</Button>
+                </Link>
+                <Link href="/about">
+                  <Button size={"lg"} variant={"outline"}>
+                    O aplikaci
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

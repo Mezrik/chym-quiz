@@ -70,25 +70,8 @@ export default function Page({ params }: { params: { quizId: string } }) {
       </Alert>
       <div className="space-y-4">
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a lacus
-          magna. Sed molestie purus dolor, at fringilla sem fringilla in.
-          Vestibulum eu tincidunt nunc. Nulla facilisi. Nam efficitur libero
-          hendrerit, ullamcorper diam eu, consectetur magna. Maecenas quis augue
-          sem. Aenean imperdiet imperdiet vulputate. Vivamus mauris risus,
-          rutrum porttitor auctor id, consectetur sed elit. Donec varius ligula
-          nibh, ac dignissim diam ornare a. Aenean finibus nunc eget ante
-          viverra blandit ornare sit amet nisi. Maecenas scelerisque nisl in
-          tortor blandit tincidunt.
-        </p>
-        <p>
-          Morbi leo dui, vehicula et urna eu, rutrum rutrum nulla. Nullam vel
-          odio ut velit consectetur condimentum. Cras porta finibus tincidunt.
-          Donec lectus dolor, tristique vel eros in, consequat finibus ex.
-          Maecenas auctor scelerisque odio ac hendrerit. Vestibulum porta, elit
-          blandit tristique placerat, mi mi bibendum nisi, et varius justo ipsum
-          at neque. Integer scelerisque ut eros vitae auctor. Vivamus commodo
-          mollis accumsan. Donec tincidunt massa nec neque vestibulum
-          ullamcorper. Aenean in nunc lectus.
+          V testu se správné odpovědi vybírají z více možností a vždy je pouze
+          jedna správná.
         </p>
       </div>
       <Button size="lg" onClick={handleStartQuiz}>
