@@ -12,6 +12,14 @@ import { Progress } from "@/components/ui/progress";
 import { timeDigital } from "@/utils/time";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function Page({
   params,
@@ -25,6 +33,7 @@ export default function Page({
 
   const [hasError, setHasError] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(Number.MAX_SAFE_INTEGER);
+  const [warning, setWarning] = useState(false);
   const [answers, setAnswers] = useState<Record<number, number>>({});
 
   const { data: quiz, isLoading: quizLoading } = useQuery({
@@ -50,10 +59,20 @@ export default function Page({
   };
 
   const handleSubmit = useCallback(() => {
+    if (
+      !warning &&
+      quiz &&
+      !("error" in quiz) &&
+      Object.entries(answers).length != quiz?.questions?.length
+    ) {
+      setWarning(true);
+      return;
+    }
+
     submitQuizMutate().then(() =>
       router.replace(`/quiz/results/${quizPassId}`)
     );
-  }, [quizPassId, router, submitQuizMutate]);
+  }, [answers, warning, quiz, quizPassId, router, submitQuizMutate]);
 
   useEffect(() => {
     if (timeRemaining <= 0) handleSubmit();
@@ -154,6 +173,23 @@ export default function Page({
           Odevzdat
         </Button>
       )}
+
+      <Dialog open={warning} onOpenChange={setWarning}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Opravdu chcete pokračovat?</DialogTitle>
+            <DialogDescription>
+              Nemáte vyplněné všechny otázky
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button type="button" onClick={handleSubmit}>
+              Pokračovat
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

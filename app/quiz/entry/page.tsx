@@ -62,7 +62,7 @@ export default function Page() {
     <div className="col-span-12">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <fieldset className="flex gap-4">
+          <fieldset className="flex gap-4 flex-col md:flex-row">
             <FormField
               control={form.control}
               name="quizId"
