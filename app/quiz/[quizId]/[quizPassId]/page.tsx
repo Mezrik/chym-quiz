@@ -1,17 +1,17 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { RealtimeChannel } from "@supabase/supabase-js";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 import { getQuizReadDataFull } from "@/actions/quiz-instance";
 import { Question } from "@/components/quiz/question";
 import { createClient } from "@/utils/client";
-import { useEffect, useRef, useState } from "react";
-import { startQuiz, hasQuizPassEnded } from "@/actions/quiz-pass";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { hasQuizPassEnded, submitQuiz } from "@/actions/quiz-pass";
 import { Progress } from "@/components/ui/progress";
 import { timeDigital } from "@/utils/time";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Page({
   params,
@@ -23,6 +23,7 @@ export default function Page({
 
   const readOnly = quizPassId === "read-only";
 
+  const [hasError, setHasError] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(Number.MAX_SAFE_INTEGER);
   const [answers, setAnswers] = useState<Record<number, number>>({});
 
@@ -36,7 +37,9 @@ export default function Page({
     queryFn: () => hasQuizPassEnded({ quizPassId }),
   });
 
-  const roomId = useRef(`quiz-pass-${quizPassId}`);
+  const { mutateAsync: submitQuizMutate } = useMutation({
+    mutationFn: () => submitQuiz({ quizPassId, answers }),
+  });
 
   const trackTime = (time: number) => {
     setTimeRemaining(time);
@@ -46,60 +49,58 @@ export default function Page({
     setAnswers({ ...answers, [questionId]: answer });
   };
 
-  const handleSubmit = async () => {
-    const supabase = createClient();
-    const channel = supabase.channel(roomId.current);
-
-    await channel.send({
-      type: "broadcast",
-      event: "submit",
-      payload: answers,
-    });
-  };
+  const handleSubmit = useCallback(() => {
+    submitQuizMutate().then(() =>
+      router.replace(`/quiz/results/${quizPassId}`)
+    );
+  }, [quizPassId, router, submitQuizMutate]);
 
   useEffect(() => {
-    if (timeRemaining <= 0) router.replace(`/quiz/results/${quizPassId}`);
-  }, [quizId, quizPassId, router, timeRemaining]);
+    if (timeRemaining <= 0) handleSubmit();
+  }, [handleSubmit, quizId, quizPassId, router, timeRemaining]);
 
   useEffect(() => {
     if (!quiz || "error" in quiz || quizPassId === "read-only") return;
     const supabase = createClient();
 
-    let channel: RealtimeChannel;
-
     const start = async () => {
-      await startQuiz({ quizPassId });
+      const { data, error } = await supabase.functions.invoke("quiz-stream", {
+        body: { quizPassId },
+      });
 
-      channel = supabase.channel(roomId.current);
+      if (error) {
+        setHasError(true);
+        return;
+      }
 
-      channel
-        .on("broadcast", { event: "time-tick" }, ({ payload }) =>
-          trackTime(payload.timeRemaining)
-        )
-        .on("broadcast", { event: "time-end" }, (payload) => {
+      const reader = data.body.getReader();
+
+      reader.read().then(function pump({ done, value }: any) {
+        if (done) {
+          return;
+        }
+
+        const text = new TextDecoder().decode(value);
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (error) {
+          data = {};
+        }
+
+        if (data.event === "time-tick") {
+          trackTime(data.payload.timeRemaining);
+        } else if (data.event === "time-end") {
           setTimeRemaining(0);
+        }
 
-          channel.send({
-            type: "broadcast",
-            event: "submit",
-            payload: answers,
-          });
-
-          supabase.removeChannel(channel);
-        })
-        .on("broadcast", { event: "redirect" }, () => {
-          supabase.removeChannel(channel);
-          setTimeRemaining(0);
-        })
-        .subscribe();
+        // Read some more, and call this function again
+        return reader.read().then(pump);
+      });
     };
 
     start();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [quiz, quizPassId, answers]);
+  }, [quiz, quizPassId]);
 
   if (!quiz || quizLoading || endedLoading || ended)
     return <h1>Test se načítá</h1>;
@@ -111,10 +112,26 @@ export default function Page({
 
   return (
     <div className="flex flex-col">
+      {hasError && (
+        <div className="flex gap-4">
+          <h1 className="text-xl font-bold">Nastala chyba</h1>
+          <Button type="button" onClick={() => router.replace("/")}>
+            Domů
+          </Button>
+        </div>
+      )}
       {!readOnly && (
         <div className="flex gap-4 items-center">
-          <Progress value={(timeRemaining / (totalTime * 1000)) * 100} />
-          <div>{timeDigital(Math.round(timeRemaining / 1000))}</div>
+          {Number.MAX_SAFE_INTEGER === timeRemaining ? (
+            <>
+              <Skeleton className="h-4 w-full" />
+            </>
+          ) : (
+            <>
+              <Progress value={(timeRemaining / (totalTime * 1000)) * 100} />
+              <div>{timeDigital(Math.round(timeRemaining / 1000))}</div>
+            </>
+          )}
         </div>
       )}
       <div className="space-y-4 mt-6">

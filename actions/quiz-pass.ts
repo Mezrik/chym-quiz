@@ -25,114 +25,26 @@ export const initializeQuiz = async ({
   return data;
 };
 
-export const startQuiz = async ({ quizPassId }: { quizPassId: string }) => {
+export const submitQuiz = async ({
+  quizPassId,
+  answers,
+}: {
+  quizPassId: string;
+  answers: Record<number, number>;
+}) => {
   const supabase = createClient();
 
-  console.log(quizPassId);
+  const { error } = await supabase.from("quiz_instance_pass_answer").insert(
+    Object.entries<number>(answers).map(([key, value]) => ({
+      quiz_question_id: parseInt(key, 10),
+      quiz_instance_pass_id: quizPassId,
+      quiz_question_answer_id: value,
+    }))
+  );
 
-  const { data, error } = await supabase
-    .from("quiz_instance_pass")
-    .select(
-      `start, end, quiz_instance(seconds_per_question, quiz_set(quiz_question(count)))`
-    )
-    .eq("id", quizPassId)
-    .single();
+  await setQuizPassResults({ quizPassId });
 
   if (error) return { error: { message: error.message } } as ServerError;
-
-  if (data.start || data.end)
-    return {
-      error: { message: "Quiz already started or ended" },
-    } as ServerError;
-
-  const questionsCount =
-    data?.quiz_instance?.quiz_set
-      .flatMap(({ quiz_question }) => quiz_question)
-      .map(({ count }) => count)
-      .reduce((acc, val) => acc + val, 0) ?? 0;
-
-  const totalTime =
-    (data?.quiz_instance?.seconds_per_question ?? 0) * questionsCount;
-
-  const roomId = `quiz-pass-${quizPassId}`;
-  const channel = supabase.channel(roomId);
-
-  const startDate = new Date();
-  let start = startDate.getTime();
-  let interval: NodeJS.Timeout | null = null;
-
-  const startResponse = await supabase
-    .from("quiz_instance_pass")
-    .update({ start: startDate.toISOString() })
-    .eq("id", quizPassId);
-
-  console.log(quizPassId, "start");
-
-  const setEnd = async () => {
-    await supabase
-      .from("quiz_instance_pass")
-      .update({ end: new Date().toISOString() })
-      .eq("id", quizPassId);
-  };
-
-  channel
-    .on("broadcast", { event: "submit" }, async ({ payload }) => {
-      setEnd();
-
-      await supabase.from("quiz_instance_pass_answer").insert(
-        Object.entries<number>(payload).map(([key, value]) => ({
-          quiz_question_id: parseInt(key, 10),
-          quiz_instance_pass_id: quizPassId,
-          quiz_question_answer_id: value,
-        }))
-      );
-
-      await setQuizPassResults({ quizPassId });
-
-      channel.send({
-        type: "broadcast",
-        event: "redirect",
-      });
-
-      channel.unsubscribe();
-      interval && clearInterval(interval);
-    })
-    .subscribe((status) => {
-      // Wait for successful connection
-      if (status !== "SUBSCRIBED") {
-        return null;
-      }
-
-      start = Date.now();
-      const end = start + totalTime * 1000;
-
-      const tick = () =>
-        channel.send({
-          type: "broadcast",
-          event: "time-tick",
-          payload: { timeRemaining: end - Date.now() },
-        });
-
-      tick();
-      interval = setInterval(() => {
-        console.log(Date.now());
-        if (Date.now() < end) {
-          tick();
-        } else {
-          channel.send({
-            type: "broadcast",
-            event: "time-end",
-            payload: { message: "end" },
-          });
-
-          setEnd();
-
-          interval && clearInterval(interval);
-        }
-      }, 1000);
-    });
-
-  return roomId;
 };
 
 export const hasQuizPassEnded = async ({
