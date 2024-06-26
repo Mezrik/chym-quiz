@@ -1,6 +1,27 @@
 import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Test vizualizační gramotnosti",
+  openGraph: {
+    title: "Test vizualizační gramotnosti",
+    description: "Test vizualizační gramotnosti",
+  },
+  icons: {
+    icon: [
+      {
+        media: "(prefers-color-scheme: light)",
+        url: "/favicon.ico",
+      },
+      {
+        media: "(prefers-color-scheme: dark)",
+        url: "/favicon-light.ico",
+      },
+    ],
+  },
+};
 
 export default async function Home() {
   return (
