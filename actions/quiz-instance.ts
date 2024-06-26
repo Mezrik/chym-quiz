@@ -60,7 +60,7 @@ export const insertNewQuizInstance = async ({
 
   if (email) {
     await resend.emails.send({
-      from: "Test vizualizační gramotnosti <onboarding@resend.dev>",
+      from: "Test vizualizační gramotnosti <info@test-vizualizacni-gramotnosti.xyz>",
       to: email,
       subject: "Nový kvíz!",
       react: CodeMailTemplate({ code: data[0].id, quizUrl: quizUrl ?? "" }),

@@ -42,12 +42,12 @@ export const submitQuiz = async ({
     }))
   );
 
-  await setQuizPassResults({ quizPassId });
-
   await supabase
     .from("quiz_instance_pass")
     .update({ end: new Date().toISOString() })
     .eq("id", quizPassId);
+
+  await setQuizPassResults({ quizPassId });
 
   if (error) return { error: { message: error.message } } as ServerError;
 };
@@ -254,6 +254,7 @@ export const getQuizPassResults = async ({
       types_correct_percentage,
       total_correct_percentage,
       taken_time,
+      passer_name,
       quiz_instance_pass_answer(
         quiz_question_id,
         quiz_question_answer_id,
@@ -332,5 +333,6 @@ export const getQuizPassResults = async ({
     typesCorrectPercentage: data.types_correct_percentage,
     totalCorrectPercentage: data.total_correct_percentage,
     takenTime: data.taken_time,
+    userName: data.passer_name,
   };
 };

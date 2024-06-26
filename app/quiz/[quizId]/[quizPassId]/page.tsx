@@ -155,7 +155,7 @@ export default function Page({
         </div>
       )}
       {!readOnly && !quiz.without_time_limit && (
-        <div className="flex gap-4 items-center sticky top-0 bg-white/70">
+        <div className="flex gap-4 items-center sticky top-0 bg-white/70 dark:bg-slate-900/70 z-10">
           {Number.MAX_SAFE_INTEGER === timeRemaining ? (
             <>
               <Skeleton className="h-4 w-full" />

@@ -32,7 +32,9 @@ export default function Page({
 
   return (
     <div className="col-span-12 space-y-4">
-      <h1 className="text-xl font-bold">Výsledky uživatele</h1>
+      <h1 className="text-xl font-bold">
+        Výsledky uživatele {results.userName}
+      </h1>
 
       <div className="box space-y-3">
         <h3 className="text-lg font-light uppercase text-gray-400">

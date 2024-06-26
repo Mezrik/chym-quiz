@@ -5,6 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { timeFormat } from "@/utils/time";
 import { getChartTypeCaption } from "@/utils/quiz-setup";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { EyeIcon } from "lucide-react";
 
 export default function Page({
   params: { quizId },
@@ -132,12 +140,26 @@ export default function Page({
         <div className="space-y-2">
           {results.individualResults.map(
             ({ id, passer_name, total_correct_percentage }) => (
-              <p key={id}>
+              <div key={id} className="flex gap-2 items-center">
                 <span>{`${passer_name}: `}</span>
                 <span className="text-green-500">
                   {Math.round(total_correct_percentage ?? 0)}%
                 </span>
-              </p>
+
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Link
+                      href={`/quiz/results/${id}`}
+                      className="ml-4 underline text-blue-600"
+                    >
+                      <Button variant="outline" size="icon">
+                        <EyeIcon className="h-6 w-6 text-green-500" />
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>Zobrazit výsledky uživatele</TooltipContent>
+                </Tooltip>
+              </div>
             )
           )}
         </div>

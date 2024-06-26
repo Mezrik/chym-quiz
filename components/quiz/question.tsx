@@ -35,6 +35,7 @@ export const Question: FC<{
           height={0}
           sizes="100vw"
           style={{ width: "100%", height: "auto" }}
+          className="dark:invert mb-4"
         />
       )}
       <RadioGroup
